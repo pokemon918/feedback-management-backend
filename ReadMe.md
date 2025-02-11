@@ -1,49 +1,102 @@
-# Home Assignment: Sentiment Analysis Application
+# Backend Service: Sentiment Analysis API
 
 ## Description
 
-This is a sentiment analysis application that allows users to analyze the sentiment of a given text.
-Your (imagined) customer has developed a new product that they are selling on their e-commerce website.
-The customer wants to get better insights into how their customers think about their product, so they are asking you to implement a Proof of Concept for a customer feedback form with sentiment analysis.
+This is the backend service for a sentiment analysis application that processes and stores customer feedback. The service provides REST APIs for submitting feedback text and retrieving analyzed sentiments.
 
-## Requirements
+## Technical Stack
 
-   - Implement a REST API, which takes text (up to 1000 characters) as input, calculates a sentiment of the text, and stores the results in a database.
+- **Runtime:** Node.js
+- **Framework:** Express.js
+- **Database:** PostgreSQL
+- **Authentication:** JWT-based auth
 
-   - Implement a REST API, which returns saved customer text messages together with calculated sentiments.
+## API Endpoints
 
-   - Implement a frontend application with a feedback form for the end customer and that displays existing feedback with sentiment to ADMIN users.
+### Feedback Management
+- `POST /api/feedback` - Submit new feedback text (max 1000 characters)
+- `GET /api/feedback` - Retrieve all feedback entries (requires ADMIN role)
 
-   - Tech stacks:
-        - **Frontend:** React or Nextjs, tailwindcss or chakraUI
-        - **Backend:** Nodejs, express, PostgreSQL
+### Authentication
+- `POST /api/auth/login` - User login
+- `POST /api/auth/register` - User registration
 
-## Instructions
+## Database Schema
 
-   - Design, implement, and test your solution.
+```sql
+-- Feedback table structure
+CREATE TABLE feedback (
+id SERIAL PRIMARY KEY,
+text VARCHAR(1000) NOT NULL,
+sentiment VARCHAR(20) NOT NULL,
+user_id INTEGER REFERENCES users(id),
+created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+```
 
-   - Prepare a short, concise document (no presentation slides, 2 pages max) describing your solution (design, architecture, database structure if applicable).
+## Setup Instructions
 
-   - Send us the document and your implementation in a ZIP file (please, exclude binaries and dependencies)
+1. Install dependencies:
+   ```bash
+   npm install
+   ```
 
-   - Your assignment is complete when you have a working solution that you can show to your customer.
+2. Configure environment variables:
+   ```
+   DB_HOST=localhost
+   DB_PORT=5432
+   DB_NAME=sentiment_db
+   DB_USER=your_user
+   DB_PASSWORD=your_password
+   JWT_SECRET=your_secret
+   ```
 
-## Advice/Hints
+3. Run migrations:
+   ```bash
+   npm run migrate
+   ```
 
-   - Since we already provide project backend infrastructure that contains user authentication and authorization, you should keep our codebase style and structure for this project.
+4. Start the server:
+   ```bash
+   npm run dev    # development
+   npm start      # production
+   ```
 
-   - Consider using existing libraries or cloud services for calculating sentiment.
+## Testing
 
-   - Think of sentiment as simple classification (Good/Bad/Neutral).
+Run the test suite:
 
-   - Target for simplicity. Don't overcommit to the task, we value your personal time.
+```bash
+npm test
+```
 
-   - If you have any questions, don't hesitate to ask.
+## Project Structure
 
-   - If you manage to complete the task very fast, here are a couple of bonus tasks:
+```
+backend/
+├── src/
+│   ├── controllers/    # Request handlers
+│   ├── middleware/     # Auth & validation middleware
+│   ├── models/        # Database models
+│   ├── routes/        # API routes
+│   ├── services/      # Business logic
+│   └── utils/         # Helper functions
+├── tests/             # Test files
+└── README.md
+```
 
-        - Integrate with blockchain as connecting with metamask using web3.js.
+## Error Handling
 
-        - Deploy your solution to the cloud.
+The API uses standard HTTP status codes:
+- 200: Success
+- 400: Bad Request
+- 401: Unauthorized
+- 403: Forbidden
+- 500: Internal Server Error
 
-        - Implement engineering best practices (source control, CI/CD, infrastructure-as-a-code)
+## Security Considerations
+
+- JWT-based authentication
+- Input validation and sanitization
+- Rate limiting on API endpoints
+- SQL injection protection
